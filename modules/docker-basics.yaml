@@ -1,0 +1,271 @@
+name: Docker Basics
+description: >-
+  A hands-on walkthrough of the core Docker workflow: install check, pulling
+  images, running containers, inspecting state, exec, port mapping, volumes,
+  and clean-up. Every step runs a real command on your machine.
+
+steps:
+  - id: check-cli
+    instruction: |
+      ## Docker Basics
+
+      Welcome! This module walks you through Docker's everyday workflow — the
+      commands you'll use dozens of times a week.
+
+      **First, verify the Docker CLI is installed:**
+
+      ```bash
+      docker --version
+      ```
+
+      If you see "command not found", install Docker Desktop from
+      https://docs.docker.com/get-docker/ and reopen your terminal.
+
+    command_to_run: docker --version
+    expected_output: '(?i)Docker version\s+\d'
+
+  - id: check-daemon
+    instruction: |
+      ## Start the Docker daemon
+
+      The CLI is just a client. The engine (daemon) must be running to do
+      anything useful.
+
+      ```bash
+      docker info
+      ```
+
+      **macOS / Windows:** start Docker Desktop.
+      **Linux:** `sudo systemctl start docker`
+
+      Look for `Server Version:` in the output.
+
+    command_to_run: docker info
+    expected_output: '(?i)Server Version:'
+
+  - id: hello-world
+    instruction: |
+      ## Your first container
+
+      `docker run` pulls an image (if not cached) and starts a container.
+      `--rm` removes the container immediately after it exits.
+
+      ```bash
+      docker run --rm hello-world
+      ```
+
+      You should see a message confirming Docker can pull images and run
+      containers end-to-end.
+
+    command_to_run: docker run --rm hello-world
+    expected_output: '(?i)Hello from Docker'
+
+  - id: pull-image
+    instruction: |
+      ## Pull an image explicitly
+
+      Usually `docker run` pulls automatically, but you can fetch an image
+      ahead of time with `docker pull`:
+
+      ```bash
+      docker pull alpine:latest
+      ```
+
+      `alpine` is a 5 MB Linux image used throughout this tutorial.
+      The `latest` tag is implicit but worth making explicit.
+
+    command_to_run: docker pull alpine:latest
+    expected_output: '(?i)(Pull complete|Already exists|Status|alpine)'
+
+  - id: list-images
+    instruction: |
+      ## List local images
+
+      See every image stored on your machine:
+
+      ```bash
+      docker images
+      ```
+
+      You should see `hello-world` and `alpine` from the previous steps.
+      The table shows repository, tag, image ID, age, and size.
+
+    command_to_run: docker images
+    expected_output: '(?i)REPOSITORY\s+TAG'
+
+  - id: run-command-in-container
+    instruction: |
+      ## Run a one-shot command
+
+      You can pass any command to `docker run`. The container starts,
+      runs it, and exits:
+
+      ```bash
+      docker run --rm alpine:latest echo "Hello from inside Alpine"
+      ```
+
+      Notice there's no OS to boot — the container starts in milliseconds.
+
+    command_to_run: docker run --rm alpine:latest echo "Hello from inside Alpine"
+    expected_output: '(?i)Hello from inside Alpine'
+
+  - id: run-with-env
+    instruction: |
+      ## Environment variables
+
+      Use `-e` to inject environment variables into a container at runtime.
+      This is how you pass config (API keys, DSNs, feature flags) without
+      baking them into the image:
+
+      ```bash
+      docker run --rm -e MY_ENV=production alpine:latest sh -c 'echo "Env: $MY_ENV"'
+      ```
+
+    command_to_run: >-
+      docker run --rm -e MY_ENV=production alpine:latest sh -c 'echo "Env: $MY_ENV"'
+    expected_output: '(?i)Env: production'
+
+  - id: run-detached
+    instruction: |
+      ## Run a container in the background
+
+      `-d` (detached) runs the container without blocking your terminal.
+      `--name` gives it a friendly name so later commands can reference it.
+
+      ```bash
+      docker run -d --name tuto-demo alpine:latest sleep 300
+      ```
+
+      Docker prints the full container ID on success.
+
+    command_to_run: docker run -d --rm --name tuto-demo alpine:latest sleep 300
+    expected_output: '[0-9a-f]{12,}'
+
+  - id: list-running
+    instruction: |
+      ## List running containers
+
+      ```bash
+      docker ps
+      ```
+
+      You should see `tuto-demo` with status **Up**. The table shows
+      container ID, image, command, age, status, ports, and name.
+
+    command_to_run: docker ps
+    expected_output: '(?i)tuto-demo'
+
+  - id: view-logs
+    instruction: |
+      ## View container logs
+
+      `docker logs` fetches stdout/stderr from a container — running or stopped:
+
+      ```bash
+      docker logs tuto-demo
+      ```
+
+      Our `sleep` container is quiet, so output may be empty — that's fine.
+      For a real app container you'd see its log output here.
+
+    command_to_run: docker logs tuto-demo 2>&1; echo "logs-ok"
+    expected_output: '(?i)logs-ok'
+
+  - id: exec-into-container
+    instruction: |
+      ## Exec into a running container
+
+      `docker exec` runs an additional process inside an already-running
+      container — without stopping it:
+
+      ```bash
+      docker exec tuto-demo cat /etc/os-release
+      ```
+
+      This is your go-to for live debugging: inspect files, check env vars,
+      or open an interactive shell with `docker exec -it <name> sh`.
+
+    command_to_run: docker exec tuto-demo cat /etc/os-release
+    expected_output: '(?i)(Alpine|ID=alpine)'
+
+  - id: run-with-port
+    instruction: |
+      ## Port mapping
+
+      `-p <host-port>:<container-port>` maps a port on your laptop to one
+      inside the container. Here we start nginx and expose it on port 8080:
+
+      ```bash
+      docker run -d --rm --name tuto-nginx -p 8080:80 nginx:alpine
+      ```
+
+      After this step you could open http://localhost:8080 in a browser and
+      see the nginx welcome page.
+
+    command_to_run: docker run -d --rm --name tuto-nginx -p 8080:80 nginx:alpine
+    expected_output: '[0-9a-f]{12,}'
+
+  - id: verify-port
+    instruction: |
+      ## Verify the port is reachable
+
+      Use `curl` (or any HTTP client) to confirm nginx is serving on 8080:
+
+      ```bash
+      curl -s http://localhost:8080 | head -5
+      ```
+
+    command_to_run: curl -s http://localhost:8080
+    expected_output: '(?i)(nginx|Welcome|html)'
+
+  - id: stop-containers
+    instruction: |
+      ## Stop containers
+
+      `docker stop` sends SIGTERM (graceful shutdown) then SIGKILL if the
+      container doesn't exit within the grace period (default 10s):
+
+      ```bash
+      docker stop tuto-demo tuto-nginx
+      ```
+
+      Both containers used `--rm` so they're automatically removed on stop.
+
+    command_to_run: docker stop tuto-demo tuto-nginx 2>&1; echo "stopped"
+    expected_output: '(?i)stopped'
+
+  - id: clean-up-images
+    instruction: |
+      ## Remove images
+
+      Images stay on disk until you delete them. Use `docker rmi` by name or ID:
+
+      ```bash
+      docker rmi nginx:alpine
+      ```
+
+      To reclaim all space from unused images at once: `docker image prune -a`
+
+      Check remaining images:
+
+    command_to_run: docker rmi nginx:alpine 2>&1 && docker images --format '{{.Repository}}:{{.Tag}}'
+    expected_output: '(?i)(alpine|hello-world|Untagged|Deleted)'
+
+  - id: done
+    instruction: |
+      ## You're done!
+
+      You've covered the core Docker workflow:
+
+      - `docker run` — start containers (`--rm`, `-d`, `-e`, `-p`)
+      - `docker ps` — list running containers
+      - `docker logs` — view output
+      - `docker exec` — run commands inside a running container
+      - `docker stop` — graceful shutdown
+      - `docker images` / `docker rmi` — manage local images
+
+      **Next steps:** try `docker-compose` for multi-container apps, or
+      explore `docker build` to create your own images.
+
+    command_to_run: echo "docker basics complete"
+    expected_output: '(?i)complete'

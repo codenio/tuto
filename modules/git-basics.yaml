@@ -1,0 +1,165 @@
+name: Git Basics
+description: Learn the core git workflow — init, stage, commit, and inspect history
+
+steps:
+  - id: check-git
+    instruction: |
+      ## Git Basics
+
+      Welcome! This module walks you through the essential git commands every
+      developer uses daily.
+
+      **First, confirm git is installed:**
+
+      ```bash
+      git --version
+      ```
+
+    command_to_run: git --version
+    expected_output: "(?i)git version"
+
+  - id: configure-name
+    instruction: |
+      ## Configure your identity
+
+      Git tags every commit with your name and email. Set your name now
+      (skip this if you already configured it):
+
+      ```bash
+      git config --global user.name "Your Name"
+      ```
+
+      Then verify it was saved:
+
+    command_to_run: git config --global user.name
+    expected_output: ".+"
+
+  - id: configure-email
+    instruction: |
+      ## Set your email
+
+      ```bash
+      git config --global user.email "you@example.com"
+      ```
+
+      Then verify:
+
+    command_to_run: git config --global user.email
+    expected_output: ".+@.+"
+
+  - id: init-repo
+    instruction: |
+      ## Create a repository
+
+      Make a directory in your current folder and initialize a git repo inside it:
+
+      ```bash
+      mkdir -p tuto-git-demo
+      cd tuto-git-demo
+      git init
+      ```
+
+    command_to_run: git -C ./tuto-git-demo init
+    expected_output: "(?i)(initialized|existing)"
+
+  - id: create-file
+    instruction: |
+      ## Create your first file
+
+      Write a simple text file into the repo:
+
+      ```bash
+      echo "Hello, git!" > tuto-git-demo/hello.txt
+      ```
+
+    command_to_run: cat ./tuto-git-demo/hello.txt
+    expected_output: "(?i)hello"
+
+  - id: stage-file
+    instruction: |
+      ## Stage the file
+
+      Use `git add` to stage `hello.txt` for the next commit:
+
+      ```bash
+      cd tuto-git-demo && git add hello.txt
+      ```
+
+      Then check the staging area:
+
+    command_to_run: git -C ./tuto-git-demo status
+    expected_output: "(?i)(new file|changes to be committed)"
+
+  - id: first-commit
+    instruction: |
+      ## Make your first commit
+
+      Commit the staged file with a message:
+
+      ```bash
+      cd tuto-git-demo && git commit -m "Add hello.txt"
+      ```
+
+    command_to_run: git -C ./tuto-git-demo commit -m "Add hello.txt" 2>&1 || git -C ./tuto-git-demo log --oneline -1
+    expected_output: "(?i)(master|main|hello)"
+
+  - id: view-log
+    instruction: |
+      ## Inspect the commit history
+
+      View a compact one-line log of all commits:
+
+      ```bash
+      cd tuto-git-demo && git log --oneline
+      ```
+
+    command_to_run: git -C ./tuto-git-demo log --oneline
+    expected_output: "(?i)(hello|Add)"
+
+  - id: edit-and-diff
+    instruction: |
+      ## Edit a file and diff it
+
+      Append a line to `hello.txt`, then see what changed:
+
+      ```bash
+      echo "A second line" >> tuto-git-demo/hello.txt
+      cd tuto-git-demo && git diff
+      ```
+
+    command_to_run: git -C ./tuto-git-demo diff
+    expected_output: "(?i)(second|\\+)"
+
+  - id: stage-and-commit-change
+    instruction: |
+      ## Stage and commit the change
+
+      ```bash
+      cd tuto-git-demo
+      git add hello.txt
+      git commit -m "Add second line"
+      ```
+
+    command_to_run: git -C ./tuto-git-demo log --oneline | wc -l
+    expected_output: '^\s*2\s*$'
+
+  - id: cleanup
+    instruction: |
+      ## Done!
+
+      You've covered the full basic git workflow:
+
+      - `git init` — create a repo
+      - `git add` — stage changes
+      - `git commit` — record a snapshot
+      - `git log` — inspect history
+      - `git diff` — see what changed
+
+      Clean up the demo repo:
+
+      ```bash
+      rm -rf tuto-git-demo
+      ```
+
+    command_to_run: echo "git basics complete"
+    expected_output: "(?i)complete"

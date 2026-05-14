@@ -1,0 +1,181 @@
+name: Bash Scripting
+description: Write, execute, and understand shell scripts from scratch
+
+steps:
+  - id: check-bash
+    instruction: |
+      ## Bash Scripting
+
+      Bash is the default shell on most Unix systems and a powerful scripting
+      language for automation.
+
+      **Check your bash version:**
+
+      ```bash
+      bash --version
+      ```
+
+    command_to_run: bash --version
+    expected_output: "(?i)GNU bash"
+
+  - id: first-script
+    instruction: |
+      ## Write your first script
+
+      Create a simple script in your current directory:
+
+      ```bash
+      cat > tuto-hello.sh << 'EOF'
+      #!/usr/bin/env bash
+      echo "Hello from bash!"
+      EOF
+      ```
+
+    command_to_run: cat ./tuto-hello.sh
+    expected_output: "(?i)hello"
+
+  - id: make-executable
+    instruction: |
+      ## Make the script executable
+
+      Scripts need the execute permission bit set before you can run them directly:
+
+      ```bash
+      chmod +x tuto-hello.sh
+      ```
+
+    command_to_run: test -x ./tuto-hello.sh && echo "executable"
+    expected_output: "(?i)executable"
+
+  - id: run-script
+    instruction: |
+      ## Run the script
+
+      ```bash
+      ./tuto-hello.sh
+      ```
+
+    command_to_run: ./tuto-hello.sh
+    expected_output: "(?i)hello from bash"
+
+  - id: variables
+    instruction: |
+      ## Variables
+
+      Variables store values. No `$` on assignment — only on read:
+
+      ```bash
+      cat > tuto-vars.sh << 'EOF'
+      #!/usr/bin/env bash
+      NAME="World"
+      echo "Hello, $NAME!"
+      EOF
+      chmod +x tuto-vars.sh
+      ./tuto-vars.sh
+      ```
+
+    command_to_run: ./tuto-vars.sh 2>/dev/null || bash ./tuto-vars.sh
+    expected_output: "(?i)Hello, World"
+
+  - id: conditionals
+    instruction: |
+      ## Conditionals
+
+      Use `if` / `then` / `else` / `fi` to branch:
+
+      ```bash
+      cat > tuto-cond.sh << 'EOF'
+      #!/usr/bin/env bash
+      NUM=10
+      if [ "$NUM" -gt 5 ]; then
+        echo "$NUM is greater than 5"
+      else
+        echo "$NUM is not greater than 5"
+      fi
+      EOF
+      chmod +x tuto-cond.sh
+      ./tuto-cond.sh
+      ```
+
+    command_to_run: bash ./tuto-cond.sh
+    expected_output: "(?i)greater than 5"
+
+  - id: loops
+    instruction: |
+      ## Loops
+
+      `for` loops iterate over a list:
+
+      ```bash
+      cat > tuto-loop.sh << 'EOF'
+      #!/usr/bin/env bash
+      for fruit in apple banana cherry; do
+        echo "I like $fruit"
+      done
+      EOF
+      bash ./tuto-loop.sh
+      ```
+
+    command_to_run: bash ./tuto-loop.sh
+    expected_output: "(?i)banana"
+
+  - id: functions
+    instruction: |
+      ## Functions
+
+      Group reusable logic into functions:
+
+      ```bash
+      cat > tuto-func.sh << 'EOF'
+      #!/usr/bin/env bash
+      greet() {
+        local name="$1"
+        echo "Hello, $name!"
+      }
+      greet "Alice"
+      greet "Bob"
+      EOF
+      bash ./tuto-func.sh
+      ```
+
+    command_to_run: bash ./tuto-func.sh
+    expected_output: "(?i)Hello, Alice"
+
+  - id: exit-codes
+    instruction: |
+      ## Exit codes
+
+      Every command returns an exit code. `0` means success, non-zero means error.
+      `$?` holds the last exit code:
+
+      ```bash
+      ls . > /dev/null 2>&1
+      echo "ls exit code: $?"
+
+      ls /no-such-path > /dev/null 2>&1
+      echo "bad ls exit code: $?"
+      ```
+
+    command_to_run: bash -c 'ls . > /dev/null 2>&1; echo "ok:$?"; ls /no-such-path > /dev/null 2>&1; echo "bad:$?"'
+    expected_output: "ok:0"
+
+  - id: cleanup
+    instruction: |
+      ## Congrats!
+
+      You now know the core building blocks of bash scripting:
+
+      - **Variables** — store and reuse values
+      - **Conditionals** — branch with `if`/`else`
+      - **Loops** — repeat with `for`
+      - **Functions** — encapsulate logic
+      - **Exit codes** — check success/failure
+
+      Clean up the demo scripts:
+
+      ```bash
+      rm -f tuto-*.sh
+      ```
+
+    command_to_run: echo "bash scripting complete"
+    expected_output: "(?i)complete"

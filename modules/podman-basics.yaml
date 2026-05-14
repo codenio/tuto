@@ -1,0 +1,314 @@
+name: Podman Basics
+description: >-
+  A hands-on Podman tutorial covering the full container lifecycle: install,
+  images, run, exec, port mapping, volumes, pods, and clean-up. Highlights
+  how Podman differs from Docker (rootless, daemonless, pods).
+
+steps:
+  - id: check-cli
+    instruction: |
+      ## Podman Basics
+
+      Podman is a daemonless, rootless container engine that is largely
+      Docker-compatible. Most `docker` commands work with `podman` as a
+      drop-in replacement — but Podman has some powerful extras too.
+
+      **Verify Podman is installed:**
+
+      ```bash
+      podman --version
+      ```
+
+      Install if needed:
+      - macOS: `brew install podman`
+      - Fedora/RHEL: `sudo dnf install podman`
+      - Debian/Ubuntu: `sudo apt install podman`
+
+    command_to_run: podman --version
+    expected_output: '(?i)podman version\s+\d'
+
+  - id: check-machine
+    instruction: |
+      ## Start the Podman machine (macOS / Windows)
+
+      On macOS and Windows, Podman runs containers in a lightweight Linux VM
+      called a "Podman machine". Linux users can skip this step.
+
+      ```bash
+      podman machine list
+      ```
+
+      If no machine is running, start the default one:
+
+      ```bash
+      podman machine start
+      ```
+
+      Then run `podman info` to confirm the engine responds.
+
+    command_to_run: podman info --format '{{.Host.Arch}}'
+    expected_output: '(?i)^(arm64|amd64|386|riscv64|ppc64le|s390x)\s*$'
+
+  - id: rootless-info
+    instruction: |
+      ## Rootless containers — no daemon, no root
+
+      One of Podman's key features: containers run as your own user, not root.
+      This makes Podman safer for shared systems.
+
+      ```bash
+      podman info --format 'RunRoot: {{.Store.RunRoot}}'
+      ```
+
+      You should see a path inside your home directory (e.g., `/run/user/1000/...`
+      or a `.local` path) — not `/var/lib/docker`. This is rootless storage.
+
+    command_to_run: podman info --format '{{.Store.GraphRoot}}'
+    expected_output: '(?i)^\S{3,}\s*$'
+
+  - id: pull-image
+    instruction: |
+      ## Pull an image
+
+      Podman uses fully qualified image names by default. `docker.io/library/`
+      is the Docker Hub namespace for official images:
+
+      ```bash
+      podman pull docker.io/library/alpine:latest
+      ```
+
+      You can also configure a short-name alias so `alpine` resolves automatically
+      — see `/etc/containers/registries.conf`.
+
+    command_to_run: podman pull docker.io/library/alpine:latest
+    expected_output: '(?i)(Pulling|Writing|manifest|Copying|Stored|complete|already|alpine)'
+
+  - id: list-images
+    instruction: |
+      ## List local images
+
+      ```bash
+      podman images
+      ```
+
+      The output is identical to `docker images`. You should see `alpine` at minimum.
+      Podman stores images per-user (rootless) rather than in a single system store.
+
+    command_to_run: podman images
+    expected_output: '(?i)REPOSITORY\s+TAG'
+
+  - id: hello-world
+    instruction: |
+      ## Run hello-world
+
+      ```bash
+      podman run --rm docker.io/library/hello-world
+      ```
+
+      The message says "Hello from Docker" because the image is maintained by
+      Docker Inc. — Podman runs it without modification. `--rm` removes the
+      container automatically after it exits.
+
+    command_to_run: podman run --rm docker.io/library/hello-world
+    expected_output: '(?i)Hello from Docker'
+
+  - id: run-command
+    instruction: |
+      ## Run a one-shot command
+
+      Pass any command to `podman run`. The container starts, runs it, exits:
+
+      ```bash
+      podman run --rm alpine:latest sh -c 'uname -a && id'
+      ```
+
+      Notice that `id` shows your user (e.g., `uid=1000`) — not root.
+      This is rootless containers in action.
+
+    command_to_run: podman run --rm alpine:latest sh -c 'uname -a && id'
+    expected_output: '(?i)(Linux|uid=)'
+
+  - id: run-with-env
+    instruction: |
+      ## Environment variables
+
+      Inject config at runtime with `-e`:
+
+      ```bash
+      podman run --rm -e APP_ENV=staging alpine:latest sh -c 'echo "Running in: $APP_ENV"'
+      ```
+
+      In production, pair this with `--env-file .env` to load many variables
+      from a file — keeping secrets out of your shell history.
+
+    command_to_run: >-
+      podman run --rm -e APP_ENV=staging alpine:latest sh -c 'echo "Running in: $APP_ENV"'
+    expected_output: '(?i)Running in: staging'
+
+  - id: run-detached
+    instruction: |
+      ## Run in the background
+
+      `-d` detaches the container. `--replace` removes any leftover container
+      with the same name so this step is always safe to retry:
+
+      ```bash
+      podman run -d --replace --name tuto-demo alpine:latest sleep 300
+      ```
+
+    command_to_run: podman run -d --replace --name tuto-demo alpine:latest sleep 300
+    expected_output: '[0-9a-f]{12,}'
+
+  - id: list-running
+    instruction: |
+      ## List running containers
+
+      ```bash
+      podman ps
+      ```
+
+      Confirm `tuto-demo` appears with status **Up**. The table format is
+      identical to `docker ps`.
+
+    command_to_run: podman ps
+    expected_output: '(?i)tuto-demo'
+
+  - id: exec-into-container
+    instruction: |
+      ## Exec into a running container
+
+      Run an extra process inside the live container without stopping it:
+
+      ```bash
+      podman exec tuto-demo cat /etc/os-release
+      ```
+
+      For an interactive shell: `podman exec -it tuto-demo sh`
+
+      Because Podman is daemonless, `exec` communicates with the container
+      runtime directly — no daemon socket required.
+
+    command_to_run: podman exec tuto-demo cat /etc/os-release
+    expected_output: '(?i)(Alpine|ID=alpine)'
+
+  - id: view-logs
+    instruction: |
+      ## View container logs
+
+      ```bash
+      podman logs tuto-demo
+      ```
+
+      Our `sleep` container is quiet; real app containers would show their
+      stdout here. Add `-f` to follow logs in real time.
+
+      Podman stores logs per-user — no shared logging daemon.
+
+    command_to_run: podman logs tuto-demo 2>&1; echo "logs-ok"
+    expected_output: '(?i)logs-ok'
+
+  - id: run-with-port
+    instruction: |
+      ## Port mapping
+
+      `-p <host>:<container>` maps a port on your machine to one in the container.
+      Start nginx and expose it on port 8080:
+
+      ```bash
+      podman run -d --replace --name tuto-nginx -p 8080:80 docker.io/library/nginx:alpine
+      ```
+
+      **Note:** rootless Podman can only bind ports > 1024 by default.
+      Port 8080 works fine. For port 80 you'd need to configure
+      `/proc/sys/net/ipv4/ip_unprivileged_port_start`.
+
+    command_to_run: podman run -d --replace --name tuto-nginx -p 8080:80 docker.io/library/nginx:alpine
+    expected_output: '[0-9a-f]{12,}'
+
+  - id: verify-port
+    instruction: |
+      ## Verify the port is reachable
+
+      ```bash
+      curl -s http://localhost:8080 | head -5
+      ```
+
+    command_to_run: curl -s http://localhost:8080
+    expected_output: '(?i)(nginx|Welcome|html)'
+
+  - id: intro-to-pods
+    instruction: |
+      ## Pods — a Podman superpower
+
+      Unlike Docker, Podman natively supports **pods**: groups of containers
+      that share a network namespace (like a Kubernetes pod).
+
+      Create a simple pod:
+
+      ```bash
+      podman pod create --name tuto-pod
+      ```
+
+      Then list pods:
+
+      ```bash
+      podman pod list
+      ```
+
+    command_to_run: podman pod create --replace --name tuto-pod && podman pod list
+    expected_output: '(?i)tuto-pod'
+
+  - id: add-container-to-pod
+    instruction: |
+      ## Add a container to a pod
+
+      Use `--pod` to attach a container to an existing pod. Containers in the
+      same pod share localhost — they can reach each other on 127.0.0.1:
+
+      ```bash
+      podman run -d --pod tuto-pod --name tuto-pod-app alpine:latest sleep 200
+      ```
+
+      Now `tuto-pod-app` shares the network namespace of `tuto-pod`.
+
+    command_to_run: podman run -d --pod tuto-pod --name tuto-pod-app alpine:latest sleep 200
+    expected_output: '[0-9a-f]{12,}'
+
+  - id: stop-and-clean
+    instruction: |
+      ## Stop and remove everything
+
+      Stop the individual containers:
+
+      ```bash
+      podman stop tuto-demo tuto-nginx 2>/dev/null; true
+      podman rm tuto-demo tuto-nginx 2>/dev/null; true
+      ```
+
+      Remove the pod (this also removes all containers in it):
+
+      ```bash
+      podman pod rm -f tuto-pod
+      ```
+
+    command_to_run: podman stop tuto-demo tuto-nginx 2>/dev/null; podman rm tuto-demo tuto-nginx 2>/dev/null; podman pod rm -f tuto-pod 2>/dev/null; echo "cleaned"
+    expected_output: '(?i)cleaned'
+
+  - id: done
+    instruction: |
+      ## You're done!
+
+      You've covered the full Podman workflow:
+
+      - **Rootless** — containers run as your user, not root
+      - **Daemonless** — no background service required
+      - `podman run` / `pull` / `images` — manage images and containers
+      - `podman exec` / `logs` — inspect running containers
+      - `-p` — port mapping (rootless-safe above 1024)
+      - `podman pod` — native pod support (a Kubernetes primitive)
+
+      **Next steps:** try `podman generate kube` to generate Kubernetes YAML
+      from your running pods, or `podman-compose` for Docker Compose compatibility.
+
+    command_to_run: echo "podman basics complete"
+    expected_output: '(?i)complete'
