@@ -134,7 +134,7 @@ func fetchURL(raw string) ([]byte, string, error) {
 	if err != nil {
 		return nil, "", fmt.Errorf("download: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		return nil, "", fmt.Errorf("download: HTTP %s", resp.Status)
 	}

@@ -4,8 +4,7 @@ set -euo pipefail
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 
-if command -v golangci-lint >/dev/null 2>&1; then
-  golangci-lint run ./...
-else
-  go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8 run ./...
-fi
+# Keep in sync with .github/workflows/integration.yml (golangci-lint v2).
+GOLANGCI_LINT_VERSION=v2.12.2
+
+go run "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}" run ./...

@@ -3,7 +3,7 @@
 # Run all: pre-commit run --all-files
 #
 # fmt auto-corrects and re-stages Go files before the commit completes.
-# lint uses golangci-lint from PATH, or falls back to `go run` if missing.
+# lint uses golangci-lint v2.12.2 (same as CI); installs via go run if not on PATH.
 
 default_stages: [pre-commit]
 
