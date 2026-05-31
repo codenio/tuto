@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/codenio/tuto/internal/paths"
 	"github.com/codenio/tuto/internal/ui"
+	"github.com/spf13/cobra"
 )
 
 func initCmd() *cobra.Command {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/viper"
 	"github.com/codenio/tuto/internal/paths"
+	"github.com/spf13/viper"
 )
 
 // Progress tracks the active module and step.

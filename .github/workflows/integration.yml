@@ -1,5 +1,7 @@
 name: integration
 
+run-name: Running integration tests for ${{ github.event.pull_request.title }}
+
 on:
   pull_request:
     branches:
