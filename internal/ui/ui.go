@@ -24,8 +24,8 @@ var (
 			BorderForeground(lipgloss.Color("241")).
 			Width(72)
 
-	okStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("42"))
-	errStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
+	okStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("42"))
+	errStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("196"))
 	mutedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("244"))
 
 	cmdStyle = lipgloss.NewStyle().

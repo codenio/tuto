@@ -1,0 +1,38 @@
+# Install: pip install pre-commit  (or brew install pre-commit)
+# Setup:   pre-commit install
+# Run all: pre-commit run --all-files
+#
+# fmt auto-corrects and re-stages Go files before the commit completes.
+# lint uses golangci-lint from PATH, or falls back to `go run` if missing.
+
+default_stages: [pre-commit]
+
+repos:
+  - repo: local
+    hooks:
+      - id: go-fmt
+        name: fmt (make fmt)
+        entry: scripts/pre-commit-fmt.sh
+        language: system
+        pass_filenames: false
+        types: [go]
+
+      - id: go-lint
+        name: lint (golangci-lint)
+        entry: scripts/pre-commit-lint.sh
+        language: system
+        pass_filenames: false
+        types: [go]
+
+      - id: go-build
+        name: build (make build)
+        entry: make build
+        language: system
+        pass_filenames: false
+        types: [go]
+
+      - id: go-test
+        name: test (make test)
+        entry: make test
+        language: system
+        pass_filenames: false

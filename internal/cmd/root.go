@@ -2,15 +2,16 @@ package cmd
 
 import (
 	"fmt"
-	"time"
 	"strings"
-	"github.com/spf13/cobra"
+	"time"
+
 	"github.com/codenio/tuto/internal/paths"
-	"github.com/codenio/tuto/internal/version"
+	"github.com/codenio/tuto/internal/runner"
 	"github.com/codenio/tuto/internal/state"
 	"github.com/codenio/tuto/internal/tutorial"
 	"github.com/codenio/tuto/internal/ui"
-	"github.com/codenio/tuto/internal/runner"
+	"github.com/codenio/tuto/internal/version"
+	"github.com/spf13/cobra"
 )
 
 var modulesDir string
@@ -29,17 +30,16 @@ func Execute() error {
 	root.PersistentFlags().StringVar(&modulesDir, "modules", "./modules", "additional directory containing tutorial YAML files (after ~/.tuto/modules)")
 
 	root.AddCommand(
-		initCmd(), 
+		initCmd(),
 		moduleCmd(),
 		sessionCmd(),
 		nextCmd(),
 		previousCmd(),
 		skipCmd(),
 		showCmd(),
-		)
+	)
 	return root.Execute()
 }
-
 
 func nextCmd() *cobra.Command {
 	var timeoutSec int

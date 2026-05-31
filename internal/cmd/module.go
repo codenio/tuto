@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/cobra"
 	"github.com/codenio/tuto/internal/modstore"
 	"github.com/codenio/tuto/internal/paths"
 	"github.com/codenio/tuto/internal/tutorial"
 	"github.com/codenio/tuto/internal/ui"
+	"github.com/spf13/cobra"
 )
 
 // fence is triple-backtick — avoids embedding backticks inside a raw string literal.
@@ -178,10 +178,10 @@ func moduleUninstallCmd() *cobra.Command {
 type ghSearchResult struct {
 	TotalCount int `json:"total_count"`
 	Items      []struct {
-		FullName    string `json:"full_name"`
-		Description string `json:"description"`
-		HTMLURL     string `json:"html_url"`
-		StarCount   int    `json:"stargazers_count"`
+		FullName    string   `json:"full_name"`
+		Description string   `json:"description"`
+		HTMLURL     string   `json:"html_url"`
+		StarCount   int      `json:"stargazers_count"`
 		Topics      []string `json:"topics"`
 	} `json:"items"`
 }

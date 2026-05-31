@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/cobra"
 	"github.com/codenio/tuto/internal/state"
 	"github.com/codenio/tuto/internal/tutorial"
 	"github.com/codenio/tuto/internal/ui"
+	"github.com/spf13/cobra"
 )
 
 func sessionCmd() *cobra.Command {

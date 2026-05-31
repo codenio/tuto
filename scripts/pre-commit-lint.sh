@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(git rev-parse --show-toplevel)"
+cd "$root"
+
+if command -v golangci-lint >/dev/null 2>&1; then
+  golangci-lint run ./...
+else
+  go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.8 run ./...
+fi
