@@ -5,14 +5,14 @@ Modules are **YAML** files discovered under **`~/.tuto/modules/`** and the `--mo
 ## Scaffold a new module
 
 ```bash
-tuto init my-tutorial          # creates my-tutorial.yaml in the current directory
+tuto module create my-tutorial   # creates my-tutorial.yaml in the current directory
 ```
 
 Edit the generated file, then test it immediately:
 
 ```bash
 tuto session start my-tutorial
-tuto step next
+tuto next
 ```
 
 ---
@@ -34,7 +34,7 @@ steps:
       echo "example command"
       ```
 
-    command_to_run: echo "example command"   # required — run by `tuto step next`
+    command_to_run: echo "example command"   # required — run by `tuto next`
     expected_output: '(?i)example'           # required — Go regex matched on stdout+stderr
 ```
 
@@ -66,7 +66,7 @@ Instructions are rendered with [Glamour](https://github.com/charmbracelet/glamou
 
 ## How validation works
 
-When the learner runs **`tuto step next`**:
+When the learner runs **`tuto next`**:
 
 1. tuto compiles `expected_output` as a Go regex. Invalid patterns surface as an error immediately.
 2. It runs `command_to_run` via shell with a configurable timeout (default 30 s; override with `--timeout N`).
@@ -116,7 +116,7 @@ command_to_run: >-
 - **Narrow regexes** reduce false positives. Use `^…$` anchors when the output shape is stable.
 - **Idempotent steps** — if a step creates a container or file, use `--replace`, a unique name, or a cleanup step so retries work cleanly.
 - **Cross-platform** — remember that macOS vs Linux may differ in paths and tool availability.
-- **Test your module** with `tuto step skip` to walk through all steps without executing commands.
+- **Test your module** with `tuto skip` to walk through all steps without executing commands.
 
 ---
 

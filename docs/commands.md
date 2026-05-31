@@ -27,25 +27,45 @@ tuto session start "Git Basics"
 
 ### `session status`
 
-Shows the active module name, description, and overall progress bar. Does not print step detail — use `step show` or `step status` for that.
+Shows the active module name, description, overall progress bar, and current step detail.
 
 ```bash
 tuto session status
 ```
 
-### `session reset`
+Alternatively, use `tuto show` for the current step instruction only.
+
+### `session pause`
+
+Hides the shell prompt token while preserving session state.
+
+```bash
+tuto session pause
+```
+
+### `session resume`
+
+Restores the shell prompt token for a paused session.
+
+```bash
+tuto session resume
+```
+
+### `session restart` (`session reset`)
 
 Resets `step_index` back to 0 **without** clearing the session. The module stays active; you restart from step 1.
 
 ```bash
+tuto session restart
 tuto session reset
 ```
 
-### `session end`
+### `session stop` (`session end`)
 
 Clears all session state (`~/.tuto/state.json` and legacy `~/.tuto-state.json`). The module is no longer active.
 
 ```bash
+tuto session stop
 tuto session end
 ```
 
@@ -57,23 +77,13 @@ Prints a compact token like `(git-basics: 3/11)` when a session is active, and *
 tuto session prompt
 ```
 
-### `session shell-setup`
-
-Detects your current shell (`$SHELL`), appends the prompt integration snippet to your shell config file, and prints how to activate it. Safe to run multiple times — will not add duplicates.
-
-Supported shells: **zsh**, **bash**, **fish**.
-
-```bash
-tuto session shell-setup
-```
-
 ---
 
-## `tuto step`
+## Step navigation
 
-Navigates and inspects steps within the active session.
+These commands operate on the active session. Requires `tuto session start <module>` first.
 
-### `step next [--timeout N]`
+### `next [--timeout N]`
 
 Validates the **current** step, then advances.
 
@@ -84,42 +94,34 @@ Validates the **current** step, then advances.
 On failure, prints the actual output and the expected pattern. Re-run after fixing your environment.
 
 ```bash
-tuto step next
-tuto step next --timeout 60    # kill check command after 60 s (default: 30)
+tuto next
+tuto next --timeout 60    # kill check command after 60 s (default: 30)
 ```
 
-### `step previous` (`step prev`)
+### `previous` (`prev`)
 
 Moves `step_index` back by one, saves, and prints that step. Does not re-run validation or undo any system changes.
 
 ```bash
-tuto step previous
-tuto step prev
+tuto previous
+tuto prev
 ```
 
-### `step skip`
+### `skip`
 
 Advances past the current step **without** running its check command. Useful if you already completed the action or want to explore ahead.
 
 ```bash
-tuto step skip
+tuto skip
 ```
 
-### `step show` (`step current`)
+### `show` (`current`)
 
 Displays the current step instruction and check command without changing state.
 
 ```bash
-tuto step show
-tuto step current
-```
-
-### `step status`
-
-Shows an ASCII progress bar and the current step detail.
-
-```bash
-tuto step status
+tuto show
+tuto current
 ```
 
 ---
@@ -135,6 +137,17 @@ Lists all modules found under `~/.tuto/modules` and `--modules`. Shows name, des
 ```bash
 tuto module list
 ```
+
+### `module create [module-name]`
+
+Scaffolds a starter module YAML in the **current directory**. The file contains example steps with markdown instructions and regex validation.
+
+```bash
+tuto module create                      # creates my-module.yaml
+tuto module create kubernetes-basics    # creates kubernetes-basics.yaml
+```
+
+Fails if the file already exists.
 
 ### `module search [query]`
 
@@ -173,16 +186,14 @@ tuto module remove "Git Basics"
 
 ---
 
-## `tuto init [module-name]`
+## `tuto init`
 
-Scaffolds a starter module YAML in the **current directory**. The file contains example steps with markdown instructions and regex validation.
+One-time setup: creates the `~/.tuto` layout and injects the shell prompt snippet.
 
 ```bash
-tuto init                      # creates my-module.yaml
-tuto init kubernetes-basics    # creates kubernetes-basics.yaml
+tuto init
+tuto init shell-setup    # inject shell prompt only (zsh, bash, fish)
 ```
-
-Fails if the file already exists.
 
 ---
 
@@ -191,7 +202,7 @@ Fails if the file already exists.
 ```bash
 tuto --help
 tuto session --help
-tuto step --help
+tuto next --help
 tuto module --help
-tuto <subcommand> <command> --help
+tuto <command> --help
 ```

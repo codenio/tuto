@@ -33,7 +33,7 @@ make fmt      # gofmt + goimports
 ```
 cmd/tuto/           entry point
 internal/
-  cmd/              cobra commands (session, step, module, init)
+  cmd/              cobra commands (session, next/previous/skip/show, module, init)
   modstore/         module install / update / remove
   paths/            ~/.tuto directory layout
   runner/           shell command execution + regex validation
@@ -74,7 +74,7 @@ If you discover a way a malicious module author could escalate beyond the above 
 - Keep steps focused: one skill per step.
 - Use idempotent `command_to_run` commands where possible.
 - Anchor regexes (`^...$`) when the output shape is predictable.
-- Test with `tuto step skip` to walk through all steps without executing.
+- Test with `tuto skip` to walk through all steps without executing.
 - See [docs/modules.md](docs/modules.md) for the full schema reference.
 
 ---
