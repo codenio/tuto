@@ -8,7 +8,7 @@ import (
 	"github.com/codenio/tuto/internal/ui"
 )
 
-func newInitCmd() *cobra.Command {
+func initCmd() *cobra.Command {
 	root := &cobra.Command{
 		Use:   "init",
 		Short: "One-time setup: create ~/.tuto layout and inject shell prompt",
@@ -34,11 +34,11 @@ Safe to run multiple times — existing files and shell snippets are not overwri
 			return runShellSetup()
 		},
 	}
-	root.AddCommand(newInitShellSetupCmd())
+	root.AddCommand(shellSetupCmd())
 	return root
 }
 
-func newInitShellSetupCmd() *cobra.Command {
+func shellSetupCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "shell-setup",
 		Short: "Inject tuto prompt into your shell config (zsh, bash, fish)",

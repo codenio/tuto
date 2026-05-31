@@ -10,24 +10,24 @@ import (
 	"github.com/codenio/tuto/internal/ui"
 )
 
-func newSessionCmd() *cobra.Command {
+func sessionCmd() *cobra.Command {
 	root := &cobra.Command{
 		Use:   "session",
 		Short: "Start, pause, resume, restart and stop the learning session",
 	}
 	root.AddCommand(
-		newSessionStartCmd(),
-		newSessionStopCmd(),
-		newSessionPauseCmd(),
-		newSessionResumeCmd(),
-		newSessionRestartCmd(),
-		newSessionStatusCmd(),
-		newSessionPromptCmd(),
+		sessionStartCmd(),
+		sessionStopCmd(),
+		sessionPauseCmd(),
+		sessionResumeCmd(),
+		sessionRestartCmd(),
+		sessionStatusCmd(),
+		sessionPromptCmd(),
 	)
 	return root
 }
 
-func newSessionStartCmd() *cobra.Command {
+func sessionStartCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "start <module-name>",
 		Short: "Begin a new session on a module",
@@ -55,7 +55,7 @@ func newSessionStartCmd() *cobra.Command {
 	}
 }
 
-func newSessionStopCmd() *cobra.Command {
+func sessionStopCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "stop",
 		Aliases: []string{"end"},
@@ -80,7 +80,7 @@ func newSessionStopCmd() *cobra.Command {
 	}
 }
 
-func newSessionPauseCmd() *cobra.Command {
+func sessionPauseCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "pause",
 		Short: "Pause the session (hides shell prompt token)",
@@ -108,7 +108,7 @@ func newSessionPauseCmd() *cobra.Command {
 	}
 }
 
-func newSessionResumeCmd() *cobra.Command {
+func sessionResumeCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "resume",
 		Short: "Resume a paused session (restores shell prompt token)",
@@ -136,7 +136,7 @@ func newSessionResumeCmd() *cobra.Command {
 	}
 }
 
-func newSessionRestartCmd() *cobra.Command {
+func sessionRestartCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "restart",
 		Aliases: []string{"reset"},
@@ -163,8 +163,8 @@ func newSessionRestartCmd() *cobra.Command {
 	}
 }
 
-// newSessionStatusCmd merges show + status: module overview + current step detail.
-func newSessionStatusCmd() *cobra.Command {
+// sessionStatusCmd merges show + status: module overview + current step detail.
+func sessionStatusCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "status",
 		Short: "Show session progress and current step",
@@ -211,9 +211,9 @@ func newSessionStatusCmd() *cobra.Command {
 	}
 }
 
-// newSessionPromptCmd is hidden — called by the shell snippet injected by `tuto init shell-setup`.
+// sessionPromptCmd is hidden — called by the shell snippet injected by `tuto init shell-setup`.
 // Outputs nothing when no session is active or when the session is paused.
-func newSessionPromptCmd() *cobra.Command {
+func sessionPromptCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:    "prompt",
 		Hidden: true,

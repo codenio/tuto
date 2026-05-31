@@ -1,4 +1,4 @@
-name: Git Basics
+name: git-basics
 description: Learn the core git workflow — init, stage, commit, and inspect history
 
 steps:
@@ -18,35 +18,6 @@ steps:
     command_to_run: git --version
     expected_output: "(?i)git version"
 
-  - id: configure-name
-    instruction: |
-      ## Configure your identity
-
-      Git tags every commit with your name and email. Set your name now
-      (skip this if you already configured it):
-
-      ```bash
-      git config --global user.name "Your Name"
-      ```
-
-      Then verify it was saved:
-
-    command_to_run: git config --global user.name
-    expected_output: ".+"
-
-  - id: configure-email
-    instruction: |
-      ## Set your email
-
-      ```bash
-      git config --global user.email "you@example.com"
-      ```
-
-      Then verify:
-
-    command_to_run: git config --global user.email
-    expected_output: ".+@.+"
-
   - id: init-repo
     instruction: |
       ## Create a repository
@@ -59,8 +30,37 @@ steps:
       git init
       ```
 
-    command_to_run: git -C ./tuto-git-demo init
-    expected_output: "(?i)(initialized|existing)"
+    command_to_run: git status
+    expected_output: "(?i)On branch main"
+
+  - id: configure-name
+    instruction: |
+      ## Configure your identity
+
+      Git tags every commit with your name and email. Set your name now
+      (skip this if you already configured it):
+
+      ```bash
+      git config user.name "Your Name"
+      ```
+
+      Then verify it was saved:
+
+    command_to_run: git config user.name
+    expected_output: ".+"
+
+  - id: configure-email
+    instruction: |
+      ## Set your email
+
+      ```bash
+      git config user.email "you@example.com"
+      ```
+
+      Then verify:
+
+    command_to_run: git config user.email
+    expected_output: ".+@.+"
 
   - id: create-file
     instruction: |
@@ -69,10 +69,10 @@ steps:
       Write a simple text file into the repo:
 
       ```bash
-      echo "Hello, git!" > tuto-git-demo/hello.txt
+      echo "Hello, git!" > hello.txt
       ```
 
-    command_to_run: cat ./tuto-git-demo/hello.txt
+    command_to_run: cat hello.txt
     expected_output: "(?i)hello"
 
   - id: stage-file
@@ -82,12 +82,12 @@ steps:
       Use `git add` to stage `hello.txt` for the next commit:
 
       ```bash
-      cd tuto-git-demo && git add hello.txt
+      git add hello.txt
       ```
 
       Then check the staging area:
 
-    command_to_run: git -C ./tuto-git-demo status
+    command_to_run: git status
     expected_output: "(?i)(new file|changes to be committed)"
 
   - id: first-commit
@@ -97,11 +97,11 @@ steps:
       Commit the staged file with a message:
 
       ```bash
-      cd tuto-git-demo && git commit -m "Add hello.txt"
+      git commit -m "Add hello.txt"
       ```
 
-    command_to_run: git -C ./tuto-git-demo commit -m "Add hello.txt" 2>&1 || git -C ./tuto-git-demo log --oneline -1
-    expected_output: "(?i)(master|main|hello)"
+    command_to_run: git --no-pager log --oneline >/dev/null 2>&1
+    expected_output: "(?i)Add hello.txt"
 
   - id: view-log
     instruction: |
@@ -110,11 +110,11 @@ steps:
       View a compact one-line log of all commits:
 
       ```bash
-      cd tuto-git-demo && git log --oneline
+      git log
       ```
 
-    command_to_run: git -C ./tuto-git-demo log --oneline
-    expected_output: "(?i)(hello|Add)"
+    command_to_run: git --no-pager log --oneline >/dev/null 2>&1
+    expected_output: "(?i)Add hello.txt"
 
   - id: edit-and-diff
     instruction: |
@@ -123,11 +123,11 @@ steps:
       Append a line to `hello.txt`, then see what changed:
 
       ```bash
-      echo "A second line" >> tuto-git-demo/hello.txt
-      cd tuto-git-demo && git diff
+      echo "A second line" >> hello.txt
+      git diff
       ```
 
-    command_to_run: git -C ./tuto-git-demo diff
+    command_to_run: git --no-pager diff
     expected_output: "(?i)(second|\\+)"
 
   - id: stage-and-commit-change
@@ -135,12 +135,11 @@ steps:
       ## Stage and commit the change
 
       ```bash
-      cd tuto-git-demo
       git add hello.txt
       git commit -m "Add second line"
       ```
 
-    command_to_run: git -C ./tuto-git-demo log --oneline | wc -l
+    command_to_run: git --no-pager log --oneline | wc -l
     expected_output: '^\s*2\s*$'
 
   - id: cleanup
@@ -158,6 +157,7 @@ steps:
       Clean up the demo repo:
 
       ```bash
+      cd ../
       rm -rf tuto-git-demo
       ```
 
