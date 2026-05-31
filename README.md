@@ -4,8 +4,8 @@
 
 ```
 tuto session start git-basics      # begin a tutorial
-tuto step show                     # read the current instruction
-tuto step next                     # validate and advance
+tuto show                          # read the current instruction
+tuto next                          # validate and advance
 tuto session status                # see your progress
 ```
 
@@ -26,15 +26,15 @@ tuto session status                # see your progress
 ## Features
 
 - **YAML modules** — one file per tutorial: name, description, ordered steps
-- **Real shell validation** — `step next` runs your actual check command and matches output with a regex
+- **Real shell validation** — `next` runs your actual check command and matches output with a regex
 - **Markdown instructions** — rendered with syntax highlighting, bold, code blocks ([Glamour](https://github.com/charmbracelet/glamour))
 - **Session management** — `session start / status / pause / resume / restart / stop`
-- **Step navigation** — `step next / previous / skip / show`
+- **Step navigation** — `next / previous / skip / show`
 - **Shell prompt integration** — shows `(git-basics: 3/11)` in your prompt via `tuto init`
 - **Module registry** — `module search` finds GitHub repos tagged `tuto-module`
 - **Remote install** — `module install <url>` fetches and installs modules from any HTTPS URL
 - **Author scaffolding** — `tuto module create <name>` generates a starter module in seconds
-- **Timeout protection** — `step next --timeout 60` kills hung check commands
+- **Timeout protection** — `next --timeout 60` kills hung check commands
 
 ---
 
@@ -59,8 +59,8 @@ make build
 ./bin/tuto init                    # one-time setup (creates ~/.tuto, injects shell prompt)
 ./bin/tuto module list
 ./bin/tuto session start git-basics
-./bin/tuto step show
-./bin/tuto step next
+./bin/tuto show
+./bin/tuto next
 ```
 
 Install system-wide from source:
@@ -84,14 +84,14 @@ make install    # places binary in $GOBIN or $GOPATH/bin
 | `session restart` | Restart from step 1 |
 | `session stop` | Discard the session entirely |
 
-### Step
+### Navigation
 
 | Command | Description |
 |---------|-------------|
-| `step next [--timeout N]` | Validate current step and advance |
-| `step previous` / `prev` | Go back one step |
-| `step skip` | Skip without validating |
-| `step show` / `current` | Display current step instruction |
+| `next [--timeout N]` | Validate current step and advance |
+| `previous` / `prev` | Go back one step |
+| `skip` | Skip without validating |
+| `show` / `current` | Display current step instruction |
 
 ### Module
 
@@ -155,7 +155,7 @@ Full schema → [docs/modules.md](docs/modules.md)
 
 ## ⚠️ Security — trust your module sources
 
-`tuto step next` executes the `command_to_run` field from the module YAML verbatim via `sh -c`. This is by design — it is what allows validation against your real environment.
+`tuto next` executes the `command_to_run` field from the module YAML verbatim via `sh -c`. This is by design — it is what allows validation against your real environment.
 
 **A malicious module can run arbitrary commands on your machine.**
 
