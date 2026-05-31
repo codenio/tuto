@@ -51,23 +51,23 @@ steps:
 `, name, fence, fence)
 }
 
-func newModuleCmd() *cobra.Command {
+func moduleCmd() *cobra.Command {
 	root := &cobra.Command{
 		Use:   "module",
 		Short: "List, install, update, remove, search, or create modules",
 	}
 	root.AddCommand(
-		newModuleListCmd(),
-		newModuleCreateCmd(),
-		newModuleInstallCmd(),
-		newModuleUpdateCmd(),
-		newModuleUninstallCmd(),
-		newModuleSearchCmd(),
+		moduleListCmd(),
+		moduleCreateCmd(),
+		moduleInstallCmd(),
+		moduleUpdateCmd(),
+		moduleUninstallCmd(),
+		moduleSearchCmd(),
 	)
 	return root
 }
 
-func newModuleCreateCmd() *cobra.Command {
+func moduleCreateCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "create [module-name]",
 		Short: "Scaffold a new module YAML in the current directory",
@@ -94,7 +94,7 @@ Edit the file, then run 'tuto session start <module-name>' to try it out.`,
 	}
 }
 
-func newModuleListCmd() *cobra.Command {
+func moduleListCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
 		Short: "List available learning modules",
@@ -127,7 +127,7 @@ func newModuleListCmd() *cobra.Command {
 	}
 }
 
-func newModuleInstallCmd() *cobra.Command {
+func moduleInstallCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "install <path-or-https-url>",
 		Short: "Copy or download a module YAML into ~/.tuto/modules",
@@ -143,7 +143,7 @@ func newModuleInstallCmd() *cobra.Command {
 	}
 }
 
-func newModuleUpdateCmd() *cobra.Command {
+func moduleUpdateCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "update <path-or-https-url>",
 		Short: "Overwrite an installed module file (same destination basename as install)",
@@ -159,7 +159,7 @@ func newModuleUpdateCmd() *cobra.Command {
 	}
 }
 
-func newModuleUninstallCmd() *cobra.Command {
+func moduleUninstallCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:     "uninstall <module-name-or-stem>",
 		Aliases: []string{"remove", "rm"},
@@ -186,7 +186,7 @@ type ghSearchResult struct {
 	} `json:"items"`
 }
 
-func newModuleSearchCmd() *cobra.Command {
+func moduleSearchCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "search [query]",
 		Short: "Search GitHub for community modules (topic: tuto-module)",
