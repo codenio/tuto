@@ -103,7 +103,7 @@ func runShellSetup() error {
 	if err != nil {
 		return fmt.Errorf("open config: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	if _, err := fmt.Fprintf(f, "\n%s\n", profile.snippet); err != nil {
 		return fmt.Errorf("write config: %w", err)
 	}

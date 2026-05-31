@@ -115,7 +115,7 @@ func moduleListCmd() *cobra.Command {
 			for _, p := range paths {
 				name, desc, err := tutorial.Summarize(p)
 				if err != nil {
-					fmt.Fprintf(cmd.ErrOrStderr(), "%s: %v\n", ui.Error("skip"), err)
+					_, _ = fmt.Fprintf(cmd.ErrOrStderr(), "%s: %v\n", ui.Error("skip"), err)
 					continue
 				}
 				line := fmt.Sprintf("%s\n  %s", ui.Box(name+"\n"+desc), ui.Muted(p))
@@ -212,7 +212,7 @@ Publish your own module by tagging your repo with that topic.`,
 			if err != nil {
 				return fmt.Errorf("search GitHub: %w", err)
 			}
-			defer resp.Body.Close()
+			defer func() { _ = resp.Body.Close() }()
 
 			if resp.StatusCode == http.StatusForbidden || resp.StatusCode == http.StatusTooManyRequests {
 				return fmt.Errorf("GitHub API rate limit reached; try again in a minute")
